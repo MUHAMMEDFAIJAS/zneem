@@ -82,7 +82,6 @@ class CartModel {
 
     return CartModel(
       items: itemsList,
-    
       cartId: json['id'],
       totalItems: json['total_items'] ?? 0,
       totalPrice: (json['total_price'] ?? 0).toDouble(),

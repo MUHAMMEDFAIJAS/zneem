@@ -51,7 +51,7 @@ class DriverListPageState extends State<DriverListPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(driver); // Pass the selected driver
+                Navigator.of(context).pop(driver); 
               },
               child: const Text('Select'),
             ),
@@ -93,7 +93,7 @@ class DriverListPageState extends State<DriverListPage> {
                 title: Text(driver.driverName),
                 subtitle: Text(
                     'Route: ${driver.driverRoute}\nPhone: ${driver.mobileNumber}'),
-                onTap: () => _showDriverDialog(driver), // Show dialog on tap
+                onTap: () => _showDriverDialog(driver), 
               );
             },
           );

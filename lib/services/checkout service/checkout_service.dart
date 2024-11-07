@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,7 +16,6 @@ class CheckoutService {
     required String paymentMethod,
   }) async {
     try {
-      // Retrieve token from SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('authToken');
 
@@ -26,10 +24,8 @@ class CheckoutService {
         return;
       }
 
-      // Set authorization header
       _dio.options.headers['Authorization'] = 'Bearer $token';
 
-      // Prepare request body
       Map<String, dynamic> requestBody = {
         "cart_id": cartId,
         "phone_number": phoneNumber,
@@ -38,13 +34,11 @@ class CheckoutService {
         "payment_method": paymentMethod,
       };
 
-      // Make POST request
       Response response = await _dio.post(
         checkoutUrl,
         data: requestBody,
       );
 
-      // Handle response
       if (response.statusCode == 200 &&
           response.data['responseStatus'] == "Success") {
         print("Checkout completed successfully!");
@@ -59,39 +53,35 @@ class CheckoutService {
 
 Future<List<PharmacyModel>> fetchPharmacies() async {
   try {
-    // Retrieve token from SharedPreferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('authToken');
 
     if (token == null) {
       print("Token not found. Please log in first.");
-      return []; // Return an empty list if no token
+      return []; 
     }
 
-    // Set up Dio with authorization header
     Dio dio = Dio();
     dio.options.headers['Authorization'] = 'Bearer $token';
 
-    // Perform GET request to fetch pharmacies
     Response response = await dio.get('http://192.168.1.124:8081/master/pharmacy/getpharmacy');
 
     if (response.statusCode == 200 && response.data['responseStatus'] == "Success") {
       List<dynamic> pharmacyList = response.data['responseData'];
 
-      // Parse pharmacies using the Pharmacy model
       List<PharmacyModel> pharmacies = pharmacyList
           .map((pharmacyJson) => PharmacyModel.fromJson(pharmacyJson))
           .toList();
 
       print("Pharmacies retrieved successfully: ${pharmacies.length} items");
-      return pharmacies; // Return the list of pharmacies
+      return pharmacies; 
     } else {
       print("Failed to retrieve pharmacies: ${response.data['responseDescription']}");
-      return []; // Return an empty list on failure
+      return []; 
     }
   } catch (e) {
     print("Error fetching pharmacies: $e");
-    return []; // Return an empty list on error
+    return []; 
   }
 }
 

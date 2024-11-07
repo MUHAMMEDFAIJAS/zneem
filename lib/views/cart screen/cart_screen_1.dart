@@ -31,22 +31,24 @@ class CartScreen1 extends StatelessWidget {
               style: TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 300),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => UserAddress(),
-                ));
-              },
-              style: ElevatedButton.styleFrom(
-                fixedSize: const Size(400, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const UserAddress(),
+                  ));
+                },
+                style: ElevatedButton.styleFrom(
+                  fixedSize: const Size(400, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  backgroundColor: Colors.green[400],
                 ),
-                backgroundColor: Colors.green[400],
-              ),
-              child: const Text(
-                'select user',
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                child: const Text(
+                  'select user',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
               ),
             ),
           ],

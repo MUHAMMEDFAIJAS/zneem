@@ -1,58 +1,4 @@
-// import 'package:get/get.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:dio/dio.dart';
-// import '../../model/cart model/cart_model.dart';
-// import '../../model/address model/address_model.dart';
 
-// class CartController extends GetxController {
-//   final Dio _dio = Dio();
-//   var cart = CartModel(
-//     items: [],
-//     totalItems: 0,
-//     totalPrice: 0.0,
-//     cartId: 0,
-//   ).obs;
-
-//   var isLoading = false.obs;
-
-//   Future<void> addToCart({
-//     required int productId,
-//     required String phoneNumber,
-//     required AddressModel address,
-//   }) async {
-//     try {
-//       isLoading(true);
-//       SharedPreferences prefs = await SharedPreferences.getInstance();
-//       String? token = prefs.getString('authToken');
-
-//       if (token == null) {
-//         throw Exception('Token not found');
-//       }
-
-//       final response = await _dio.post(
-//         'http://192.168.1.124:8081/master/cart/add',
-//         data: {
-//           "product_id": productId,
-//           "phone_number": phoneNumber,
-//           "address": address.toJson(),
-//         },
-//         options: Options(headers: {'Authorization': 'Bearer $token'}),
-//       );
-
-//       if (response.statusCode == 200 &&
-//           response.data['responseStatus'] == 'Success') {
-//         Get.snackbar('Success', 'Item added to cart successfully');
-
-//         // Optionally update the cart data here by calling fetchCart() or updating the cart variable
-//       } else {
-//         Get.snackbar('Error', 'Failed to add item to cart');
-//       }
-//     } catch (e) {
-//       Get.snackbar('Error', 'Failed to add item to cart: $e');
-//     } finally {
-//       isLoading(false);
-//     }
-//   }
 // }
 
 import 'package:get/get.dart';
@@ -77,7 +23,7 @@ class CartController extends GetxController {
       'http://192.168.1.124:8081/master/order/updatequantity';
 
   Future<void> addToCart(
-      int productId, String phoneNumber, AddressModel address) async {
+      int productId, String phoneNumber, AddressModel address,{int quantity = 1}) async {
     final prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('authToken');
 
@@ -90,6 +36,7 @@ class CartController extends GetxController {
       "product_id": productId,
       "phone_number": phoneNumber,
       "address": address.toJson(),
+      "quantity": quantity,
     };
 
     try {
@@ -177,7 +124,6 @@ class CartController extends GetxController {
     }
   }
 
-  // Update quantity method
   Future<void> updateQuantity(
       int cartItemId, String phoneNumber, int quantity) async {
     final prefs = await SharedPreferences.getInstance();
@@ -185,7 +131,7 @@ class CartController extends GetxController {
 
     if (token == null) {
       Get.snackbar('Error', 'Token not found. Please log in.');
-      return; // Exit if no token
+      return; 
     }
 
     final Map<String, dynamic> data = {
@@ -204,7 +150,7 @@ class CartController extends GetxController {
       if (response.statusCode == 200 &&
           response.data['responseStatus'] == 'Success') {
         Get.snackbar('Success', 'Cart item quantity updated successfully');
-        fetchCart(phoneNumber); // Refresh cart after updating
+        fetchCart(phoneNumber); 
       } else {
         Get.snackbar('Error',
             response.data['responseDescription'] ?? 'Unknown error occurred');

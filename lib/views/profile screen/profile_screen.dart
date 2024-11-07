@@ -72,22 +72,13 @@ class ProfileScreen extends StatelessWidget {
                       icon: Icons.shopping_bag_outlined,
                       text: 'Orders',
                       onTap: () {
-                        Get.to(() => OrderScreen(phoneNumber: '9946233225'));
+                        Get.to(
+                            () => const OrderScreen(phoneNumber: '9946233225'));
                       },
-                    ),
-                    _buildListItem(
-                      icon: Icons.favorite_outline,
-                      text: 'Saved for Later',
-                      onTap: () {},
                     ),
                     _buildListItem(
                       icon: Icons.notifications_outlined,
                       text: 'Notifications',
-                      onTap: () {},
-                    ),
-                    _buildListItem(
-                      icon: Icons.bar_chart_outlined,
-                      text: 'Health Trends & reports',
                       onTap: () {},
                     ),
                     _buildListItem(

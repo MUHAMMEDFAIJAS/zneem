@@ -7,8 +7,9 @@ class AddressController extends GetxController {
   final Dio _dio = Dio();
   final String baseUrl = "http://192.168.1.124:8081/master/address/userDetails";
 
-  var addresses = <AddressModel>[].obs;  // Observable list for addresses
+  var addresses = <AddressModel>[].obs;  
   var isLoading = false.obs;
+  var selectedAddress = Rx<AddressModel?>(null);
 
   @override
   void onInit() {
@@ -24,7 +25,6 @@ class AddressController extends GetxController {
 
       if (token != null) {
         _dio.options.headers['Authorization'] = 'Bearer $token';
-
         final response = await _dio.get(baseUrl);
 
         if (response.statusCode == 200) {
@@ -42,5 +42,17 @@ class AddressController extends GetxController {
     } finally {
       isLoading(false);
     }
+  }
+
+  void setSelectedAddress(AddressModel address) {
+    selectedAddress.value = address;
+  }
+
+  void addAddress(AddressModel address) {
+    addresses.add(address);
+  }
+
+  void removeAddress(AddressModel address) {
+    addresses.remove(address);
   }
 }

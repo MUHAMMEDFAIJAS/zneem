@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:zneempharmacy/services/cart%20services/cart_services.dart';
 import '../../controller/cart_controller.dart';
 import '../../model/address model/address_model.dart';
 import '../../services/product service/product_service.dart';
@@ -19,7 +18,6 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ProductService _productService = ProductService();
-  final CartServices cartservice = CartServices();
   final StreamController<String> _searchStreamController =
       StreamController<String>();
   final CartController cartController = Get.put(CartController());
@@ -54,7 +52,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           child: TextField(
             controller: _searchController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: 'Search for products',
               border: InputBorder.none,
               prefixIcon: Icon(Icons.search, color: Colors.grey),
@@ -67,11 +65,11 @@ class _SearchScreenState extends State<SearchScreen> {
             .asyncMap(_productService.searchProducts),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Failed to fetch search results'));
+            return const Center(child: Text('Failed to fetch search results'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No products found'));
+            return const Center(child: Text('No products found'));
           } else {
             final searchResults = snapshot.data!;
             return ListView.builder(
@@ -88,30 +86,31 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildProductCard(ProductModel product) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            Container(
-              height: 100,
-              width: 100,
-              child: Image.network(
-                product.imageUrl,
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
+    int quantity = 1;
+    return StatefulBuilder(builder: (context, setState) {
+      return Card(
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Container(
+                height: 100,
+                width: 100,
+                child: Image.network(
+                  product.imageUrl,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Container(
+              const SizedBox(width: 10),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(product.productName,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
                             overflow: TextOverflow.ellipsis)),
@@ -120,7 +119,12 @@ class _SearchScreenState extends State<SearchScreen> {
                     Row(
                       children: [
                         GestureDetector(
-                          onTap: () async {},
+                          onTap: () async {
+                            setState(() {
+                              quantity++;
+                            });
+                            // await updatecartQuantity(product.id, _quantity);
+                          },
                           child: Container(
                             color: Colors.green,
                             child: const Icon(
@@ -130,10 +134,18 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                         ),
                         const Gap(10),
-                        Text('${"item.quantity"}'),
+                        Text(quantity.toString(),
+                            style: const TextStyle(fontSize: 16)),
                         const Gap(10),
                         GestureDetector(
-                          onTap: () async {},
+                          onTap: () async {
+                            if (quantity > 1) {
+                              setState(() {
+                                quantity--;
+                              });
+                              // await updatecartQuantity(product.id, _quantity);
+                            }
+                          },
                           child: Container(
                             color: Colors.green,
                             child: const Icon(
@@ -147,36 +159,33 @@ class _SearchScreenState extends State<SearchScreen> {
                   ],
                 ),
               ),
-            ),
-            IconButton(
-              onPressed: () => _addToCart(context, product.id),
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+              IconButton(
+                onPressed: () => _addToCart(context, product.id, quantity),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                icon: const Icon(
+                  Icons.add_shopping_cart,
+                  color: Colors.green,
                 ),
               ),
-              icon: Icon(
-                Icons.add_shopping_cart,
-                color: Colors.green,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
-  Future<void> _addToCart(BuildContext context, int productId) async {
+  Future<void> _addToCart(
+      BuildContext context, int productId, int quantity) async {
     if (selectedAddress != null) {
       await cartController.addToCart(
         productId,
         selectedAddress!.phoneNumber,
         selectedAddress!,
-      );
-      cartservice.addToCart(
-        productId: productId,
-        phoneNumber: selectedAddress!.phoneNumber,
-        address: selectedAddress!,
+        quantity: quantity,
       );
 
       Get.snackbar(
@@ -192,4 +201,15 @@ class _SearchScreenState extends State<SearchScreen> {
       );
     }
   }
+
+  // Future<void> updatecartQuantity(int productId, int quantity) async {
+  //   if (selectedAddress != null) {
+  //     cartController.addToCart(
+  //       productId,
+  //       selectedAddress!.phoneNumber,
+  //       selectedAddress!,
+  //       quantity: quantity,
+  //     );
+  //   }
+  // }
 }

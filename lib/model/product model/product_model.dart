@@ -42,7 +42,7 @@ class ProductModel {
       companyId: json['company_id'] ?? 0,
       supplierId: json['supplier_id'] ?? 0,
       categoryId: json['category_id'] ?? 0,
-      price: (json['mrp'] ?? 0).toDouble(), // Adjusted from 'price' to 'mrp'
+      price: (json['mrp'] ?? 0).toDouble(), 
       vat: (json['vat'] ?? 0).toDouble(),
     );
   }

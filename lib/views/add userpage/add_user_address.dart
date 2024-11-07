@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:zneempharmacy/utils/app_color.dart';
 import '../../model/address model/address_model.dart';
 import '../../services/address service/address_service.dart';
 
@@ -23,7 +25,7 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
   String? poBox;
   String? country;
   String? phoneNumber;
-  int ? addressid;
+  int? addressid;
 
   List<AddressModel> addresses = [];
 
@@ -66,11 +68,10 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
         await addressService.addUserAddress(address);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Address added successfully!')),
+          const SnackBar(content: Text('Address added successfully!')),
         );
 
         await _fetchAddresses();
-        
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to add address: $e')),
@@ -82,10 +83,19 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add User Address')),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Center(
+          child: Text(
+            'Add User',
+            style: TextStyle(fontSize: 20, color: Colors.white),
+          ),
+        ),
+        backgroundColor: AppColor.appbar,
+      ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(22.0),
           child: Column(
             children: [
               Form(
@@ -93,7 +103,8 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('User Name'),
+                    const Gap(10),
+                    const Text('User Name'),
                     TextFormField(
                       decoration: InputDecoration(
                         hintText: 'Addressee Name',
@@ -105,7 +116,8 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
                       validator: (value) =>
                           value!.isEmpty ? 'Enter the addressee name' : null,
                     ),
-                    Text('Building Name'),
+                    const Gap(10),
+                    const Text('Building Name'),
                     TextFormField(
                       decoration: InputDecoration(
                         hintText: 'Building Name or Number',
@@ -118,7 +130,8 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
                           ? 'Enter building name or number'
                           : null,
                     ),
-                    Text('Street Name'),
+                    const Gap(10),
+                    const Text('Street Name'),
                     TextFormField(
                       decoration: InputDecoration(
                         hintText: 'Street Name or Number',
@@ -131,7 +144,8 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
                           ? 'Enter the street name or number'
                           : null,
                     ),
-                    Text('Area'),
+                    const Gap(10),
+                    const Text('Area'),
                     TextFormField(
                       decoration: InputDecoration(
                         hintText: 'Area or Neighborhood',
@@ -143,7 +157,8 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
                       validator: (value) =>
                           value!.isEmpty ? 'Enter area or neighborhood' : null,
                     ),
-                    Text('City'),
+                    const Gap(10),
+                    const Text('City'),
                     TextFormField(
                       decoration: InputDecoration(
                         hintText: 'City',
@@ -155,7 +170,8 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
                       validator: (value) =>
                           value!.isEmpty ? 'Enter the city' : null,
                     ),
-                    Text('Emirate'),
+                    const Gap(10),
+                    const Text('Emirate'),
                     TextFormField(
                       decoration: InputDecoration(
                         hintText: 'Emirate',
@@ -167,7 +183,8 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
                       validator: (value) =>
                           value!.isEmpty ? 'Enter the emirate' : null,
                     ),
-                    Text('Postal code'),
+                    const Gap(10),
+                    const Text('Postal code'),
                     TextFormField(
                       decoration: InputDecoration(
                         hintText: 'Postal Code',
@@ -179,7 +196,8 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
                       validator: (value) =>
                           value!.isEmpty ? 'Enter the postal code' : null,
                     ),
-                    Text('Country'),
+                    const Gap(10),
+                    const Text('Country'),
                     TextFormField(
                       decoration: InputDecoration(
                         hintText: 'P.O. Box',
@@ -191,7 +209,8 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
                       validator: (value) =>
                           value!.isEmpty ? 'Enter the P.O. Box' : null,
                     ),
-                    Text('Country'),
+                    const Gap(10),
+                    const Text('Country'),
                     TextFormField(
                       decoration: InputDecoration(
                         hintText: 'Country',
@@ -203,7 +222,8 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
                       validator: (value) =>
                           value!.isEmpty ? 'Enter the country' : null,
                     ),
-                    Text('Phone Number'),
+                    const Gap(10),
+                    const Text('Phone Number'),
                     TextFormField(
                       decoration: InputDecoration(
                         hintText: 'Phone Number',
@@ -215,10 +235,15 @@ class AddUserAddressPageState extends State<AddUserAddressPage> {
                       validator: (value) =>
                           value!.isEmpty ? 'Enter the phone number' : null,
                     ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _submitAddress,
-                      child: Text('Submit Address'),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: _submitAddress,
+                          child: const Text('Submit Address'),
+                        ),
+                      ],
                     ),
                   ],
                 ),

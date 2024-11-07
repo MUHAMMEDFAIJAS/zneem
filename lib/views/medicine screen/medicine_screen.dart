@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gap/gap.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zneempharmacy/model/address model/address_model.dart';
-import 'package:zneempharmacy/services/address service/address_service.dart';
+import '../../controller/cart_controller.dart';
 import '../../controller/category_controller.dart';
 import '../product page/product_page.dart';
 
@@ -21,7 +20,8 @@ class MedicineScreen extends StatefulWidget {
 
 class _MedicineScreenState extends State<MedicineScreen> {
   final CategoryController _categoryController = Get.put(CategoryController());
-  AddressModel? selectedAddress; // Variable to hold the selected address
+  final CartController cartController = Get.put(CartController());
+  AddressModel? selectedAddress;
 
   final List<String> fallbackImages = [
     'assets/images/hair accesories.png',
@@ -39,24 +39,32 @@ class _MedicineScreenState extends State<MedicineScreen> {
   @override
   void initState() {
     super.initState();
-    fetchAddress(); // Call to fetch address in initState
+    fetchSelectedAddress();
   }
 
-  void fetchAddress() async {
-    // Fetching address using a safe async approach
-    selectedAddress = widget.selectedAddress ?? await getSavedAddress();
-    setState(() {}); // Trigger rebuild after fetching
+
+
+  void fetchSelectedAddress() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? addressJson = prefs.getString('selectedAddress');
+  
+  if (addressJson != null) {
+    selectedAddress = AddressModel.fromJson(json.decode(addressJson));
+  } else {
+    selectedAddress = widget.selectedAddress; 
   }
+  setState(() {}); 
+}
+
 
   Future<AddressModel?> getSavedAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? savedAddresses = prefs.getStringList('currentAddresses');
 
     if (savedAddresses != null && savedAddresses.isNotEmpty) {
-      // Parse the first address from saved addresses
       return AddressModel.fromJson(json.decode(savedAddresses[0]));
     }
-    return null; // Return null if no address is found
+    return null;
   }
 
   @override
@@ -110,18 +118,11 @@ class _MedicineScreenState extends State<MedicineScreen> {
                     Expanded(
                       child: Obx(() {
                         if (_categoryController.isLoading.value) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else if (_categoryController
-                            .errorMessage.isNotEmpty) {
-                          return Center(
-                              child:
-                                  Text(_categoryController.errorMessage.value));
+                          return const Center(child: CircularProgressIndicator());
                         }
 
                         return GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 4,
@@ -141,11 +142,9 @@ class _MedicineScreenState extends State<MedicineScreen> {
                                             productId: data.id,
                                           ));
                                     } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                      ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
-                                          content: Text(
-                                              'Please select an address first!'),
+                                          content: Text('Please select an address first!'),
                                         ),
                                       );
                                     }
@@ -168,8 +167,7 @@ class _MedicineScreenState extends State<MedicineScreen> {
                                         fit: BoxFit.cover,
                                         width: double.infinity,
                                         height: 120,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
+                                        errorBuilder: (context, error, stackTrace) {
                                           return Image.asset(
                                             getRandomFallbackImage(),
                                             fit: BoxFit.cover,

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:zneempharmacy/views/cart%20screen/cart_screen.dart';
 import 'package:zneempharmacy/views/medicine%20screen/medicine_screen.dart';
 import 'package:zneempharmacy/views/profile%20screen/profile_screen.dart';
 import '../cart screen/cart_screen_1.dart';
-import '../cart screen/user_address.dart';
 import '../home screen/home_screen.dart';
+import '../../model/address model/address_model.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
@@ -15,25 +14,42 @@ class BottomBar extends StatefulWidget {
 }
 
 class _BottomBarState extends State<BottomBar> {
-  int currentindex = 0;
-  List screens = [
-    const HomeScreen(),
-    MedicineScreen(),
-    const CartScreen1(),
-    const ProfileScreen()
-  ];
+  int currentIndex = 0;
+  AddressModel? currentAddress; // Store current address here
+
+  @override
+  void initState() {
+    super.initState();
+    // Initially load the HomeScreen and set the address if needed
+    currentAddress = null; // Initialize or fetch initial address if needed
+  }
+
+  // Update the list of screens with the current address
+  List<Widget> get screens => [
+        HomeScreen(
+          selectedAddress: currentAddress,
+          onAddressSelected: (AddressModel? address) {
+            setState(() {
+              currentAddress = address;
+            });
+          },
+        ),
+        MedicineScreen(selectedAddress: currentAddress), // Pass current address
+        const CartScreen1(),
+        const ProfileScreen()
+      ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: screens[currentindex],
+      body: screens[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         showUnselectedLabels: true,
         elevation: 4,
-        currentIndex: currentindex,
-        onTap: (newindex) {
+        currentIndex: currentIndex,
+        onTap: (newIndex) {
           setState(() {
-            currentindex = newindex;
+            currentIndex = newIndex;
           });
         },
         selectedItemColor: Colors.green,
@@ -50,12 +66,12 @@ class _BottomBarState extends State<BottomBar> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Iconsax.shopping_bag),
-            label: 'cart',
+            label: 'Cart',
           ),
           BottomNavigationBarItem(
             icon: Icon(Iconsax.profile_circle),
-            label: 'profile',
-          )
+            label: 'Profile',
+          ),
         ],
       ),
     );

@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:zneempharmacy/views/bottom%20bar/bottom_bar.dart';
 import 'package:zneempharmacy/services/authentication%20services/auth_service.dart';
-
 import '../signup/signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -34,10 +33,8 @@ class LoginScreenState extends State<LoginScreen> {
 
     if (email.isNotEmpty && password.isNotEmpty) {
       try {
-        // Perform login using AuthService
         await _authService.login(email, password);
 
-        // Save login status
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setBool('isLoggedIn', true);
 
@@ -48,7 +45,6 @@ class LoginScreenState extends State<LoginScreen> {
           ),
         );
 
-        // Navigate to BottomBar after successful login
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const BottomBar()),
         );

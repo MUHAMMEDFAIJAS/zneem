@@ -1,19 +1,20 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
-
+import 'package:zneempharmacy/views/medicine%20screen/medicine_screen.dart';
+import 'package:zneempharmacy/utils/app_color.dart';
+import 'package:zneempharmacy/widgets/category.dart';
 import '../../model/address model/address_model.dart';
-import '../../services/address service/address_service.dart';
 import '../cart screen/user_address.dart';
 import '../search screen/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final AddressModel? selectedAddress;
-  const HomeScreen({super.key, this.selectedAddress});
+  final ValueChanged<AddressModel?>? onAddressSelected;
+  const HomeScreen({super.key, this.selectedAddress, this.onAddressSelected});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -21,26 +22,27 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   AddressModel? currentAddress;
-  List<AddressModel> addresses = [];
 
   @override
   void initState() {
     super.initState();
     currentAddress = widget.selectedAddress;
 
-    _fetchAddresses();
   }
 
-  Future<void> _fetchAddresses() async {
-    addresses = await AddressService().fetchAddresses();
-    setState(() {});
+  void selectAddress(AddressModel address) {
+    setState(() {
+      currentAddress = address;
+    });
+    widget.onAddressSelected
+        ?.call(address); 
   }
+ 
 
   @override
   Widget build(BuildContext context) {
-   
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 16, 65, 33),
+      backgroundColor: AppColor.appbar,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -100,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               SearchScreen(selectedAddress: currentAddress));
                         },
                         readOnly: true,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Search for medicines',
                           hintStyle: TextStyle(color: Colors.grey),
                           prefixIcon: Icon(Icons.search, color: Colors.grey),
@@ -142,6 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+                  const Gap(20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
                     child: Row(
@@ -161,11 +164,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const Spacer(),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Get.to(() => MedicineScreen());
+                          },
                           child: const Text(
                             'View All',
                             style: TextStyle(
-                              color: Colors.green,
+                              color: AppColor.floatingcolor,
                               fontSize: 14,
                             ),
                           ),
@@ -178,17 +183,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [
-                        categoryCard('assets/images/category images.png',
-                            'General', () {}),
-                        categoryCard(
+                        CategoryCard().categoryCard(
+                            'assets/images/category images.png',
+                            'General',
+                            () {}),
+                        CategoryCard().categoryCard(
                             'assets/images/vitamins.png', 'Vitamins', () {}),
-                        categoryCard(
+                        CategoryCard().categoryCard(
                             'assets/images/body care.png', 'Body Care', () {}),
-                        categoryCard('assets/images/body care.png',
-                            'Supplements', () {}),
+                        CategoryCard().categoryCard(
+                            'assets/images/body care.png',
+                            'Supplements',
+                            () {}),
                       ],
                     ),
                   ),
+                  const Gap(20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
                     child: Row(
@@ -206,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: const Text(
                             'View All',
                             style: TextStyle(
-                              color: Colors.green,
+                              color: AppColor.floatingcolor,
                               fontSize: 14,
                             ),
                           ),
@@ -215,18 +225,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   SizedBox(
-                    height: 220,
+                    height: 180,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [
-                        generalmedicineCard('assets/images/pharmacy img.png',
-                            'General', '200', 4.5, () {}),
-                        generalmedicineCard('assets/images/pharmacy img.png',
-                            'Syringe', '400', 5, () {}),
-                        generalmedicineCard('assets/images/pharmacy img.png',
-                            'Bandage Care', '140', 99, () {}),
-                        generalmedicineCard('assets/images/pharmacy img.png',
-                            'Knee Cap', '289', 6.5, () {}),
+                        CategoryCard().generalmedicineCard(
+                            'assets/images/pharmacy img.png',
+                            'General',
+                            '200',
+                            () {}),
+                        CategoryCard().generalmedicineCard(
+                            'assets/images/pharmacy img.png',
+                            'Syringe',
+                            '400',
+                            () {}),
+                        CategoryCard().generalmedicineCard(
+                            'assets/images/pharmacy img.png',
+                            'Bandage Care',
+                            '140',
+                            () {}),
+                        CategoryCard().generalmedicineCard(
+                            'assets/images/pharmacy img.png',
+                            'Knee Cap',
+                            '289',
+                            () {}),
                       ],
                     ),
                   ),
@@ -247,97 +269,9 @@ class _HomeScreenState extends State<HomeScreen> {
             }
           });
         },
-        child: Icon(Icons.add),
-      ),
-    );
-  }
-
-  Widget categoryCard(String imagePath, String title, Function ontap) {
-    return InkWell(
-      onTap: () {
-        ontap();
-      },
-      child: Container(
-        width: 140,
-        margin: const EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Image.asset(
-                imagePath,
-                height: 120,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget generalmedicineCard(String imagePath, String title, String price,
-      double rating, Function onTap) {
-    return InkWell(
-      onTap: () {
-        onTap();
-      },
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 10),
-        child: Container(
-          width: 140,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.white,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  imagePath,
-                  height: 120,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                title,
-                style:
-                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Rs   $price',
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+        backgroundColor: AppColor.floatingcolor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.add),
       ),
     );
   }

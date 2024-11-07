@@ -31,17 +31,10 @@ class StartPage extends StatelessWidget {
           const Gap(80),
           ElevatedButton(
             onPressed: () {
-              // Navigator.of(context).push(MaterialPageRoute(
-              //   builder: (context) => GetStartPage(),
-              // ));
+          
               Get.to(() => GetStartPage());
             },
-            // style: ButtonStyle(
-            //     fixedSize: const WidgetStatePropertyAll(Size(360, 50)),
-            //     shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(10))),
-            //     backgroundColor: const WidgetStatePropertyAll(Colors.green)
-            //     ),
+           
             style: ElevatedButton.styleFrom(fixedSize: const Size(360, 50),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10),),
             backgroundColor: Colors.green),

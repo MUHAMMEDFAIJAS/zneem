@@ -275,7 +275,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                   return DropdownMenuItem<PharmacyModel>(
                     value: pharmacy,
                     child: Text(pharmacy.pharmacyName ??
-                        "Unknown Pharmacy"), // Using pharmacyName property
+                        "Unknown Pharmacy"), 
                   );
                 }).toList(),
                 onChanged: (PharmacyModel? newValue) {

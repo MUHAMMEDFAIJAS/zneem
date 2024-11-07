@@ -24,7 +24,6 @@ class _CartScreenState extends State<CartScreen> {
       cartItems = CartServices().fetchCart(widget.selectedAddress!.phoneNumber);
     } else {
       log('error on selecting address');
-
     }
   }
 
@@ -171,7 +170,10 @@ class _CartScreenState extends State<CartScreen> {
                       const Gap(15),
                       GestureDetector(
                         onTap: () async {
+                          // final newQuantity = item.quantity + 1;
                           final newQuantity = item.quantity + 1 - item.quantity;
+                          log('Updating quantity to: $newQuantity');
+
                           final result = await CartServices().updateQuantity(
                               cartItemId: item.id,
                               phoneNumber: widget.selectedAddress!.phoneNumber,
