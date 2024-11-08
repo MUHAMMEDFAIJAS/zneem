@@ -2,11 +2,13 @@
 
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../api/api.dart';
 import '../../model/product model/product_model.dart';
 
 class ProductService {
   final Dio _dio = Dio();
-
+ final String baseUrl = Api.baseUrl;
+ 
   Future<void> _setAuthToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('authToken');
@@ -19,7 +21,8 @@ class ProductService {
     await _setAuthToken();
     try {
       final response = await _dio.get(
-        'http://192.168.1.124:8081/master/product/category',
+        // 'http://192.168.1.124:8081/master/product/category',
+        '$baseUrl/product/category',
         queryParameters: {'category_id': categoryId},
       );
 
@@ -40,7 +43,10 @@ class ProductService {
     await _setAuthToken();
     try {
       final response =
-          await _dio.get('http://192.168.1.124:8081/master/product/getProduct');
+          await _dio.get(
+            // 'http://192.168.1.124:8081/master/product/getProduct'
+            '$baseUrl/product/getProduct'
+            );
 
       if (response.statusCode == 200) {
         final List productsData = response.data['responseData'];
@@ -59,7 +65,8 @@ class ProductService {
     await _setAuthToken();
     try {
       final response = await _dio.get(
-        'http://192.168.1.124:8081/master/product/search',
+        // 'http://192.168.1.124:8081/master/product/search',
+        '$baseUrl/product/search',
         queryParameters: {'query': searchTerm},
       );
 

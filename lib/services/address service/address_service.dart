@@ -1,24 +1,21 @@
-
-
-
 import 'package:dio/dio.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zneempharmacy/api/api.dart';
 import '../../model/address model/address_model.dart';
 
 class AddressService {
   final Dio _dio = Dio();
-  final String baseUrl = "http://192.168.1.124:8081/master/address/useraddress";
+
+  final String baseUrl = Api.baseUrl;
 
   Future<void> addUserAddress(AddressModel address) async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('authToken'); 
+      String? token = await Api.getAuthToken();
 
       if (token != null) {
         _dio.options.headers['Authorization'] = 'Bearer $token';
 
         final response = await _dio.post(
-          baseUrl,
+          '$baseUrl/address/useraddress',
           data: address.toJson(),
         );
 
@@ -38,15 +35,12 @@ class AddressService {
   }
 
   Future<List<AddressModel>> fetchAddresses() async {
-    const String url = 'http://192.168.1.124:8081/master/address/userDetails';
-
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('authToken'); 
+      String? token = await Api.getAuthToken();
 
       if (token != null) {
         Response response = await _dio.get(
-          url,
+          '$baseUrl/address/userDetails',
           options: Options(
             headers: {
               'Authorization': 'Bearer $token',

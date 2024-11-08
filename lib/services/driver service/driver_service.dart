@@ -1,13 +1,15 @@
 
 import 'package:dio/dio.dart';
+import '../../api/api.dart';
 import '../../model/driver model/driver_model.dart';
 
 class DriverService {
   final Dio _dio = Dio();
+final String baseUrl = Api.baseUrl;
 
   Future<List<DriverModel>> fetchDrivers(String token) async {
     final response = await _dio.get(
-      'http://192.168.1.124:8081/master/driver/getdriver',
+      '$baseUrl/driver/getdriver',
       options: Options(
         headers: {
           'Authorization': 'Bearer $token',

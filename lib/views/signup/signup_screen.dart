@@ -31,7 +31,7 @@ class SignupScreenState extends State<SignupScreen> {
 
     if (name.isNotEmpty && email.isNotEmpty && password.isNotEmpty) {
       AuthModel newUser = AuthModel(
-        name: name,
+        pharmacyName: name,
         email: email,
         password: password,
       );

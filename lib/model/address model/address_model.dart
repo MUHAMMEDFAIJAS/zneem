@@ -1,5 +1,5 @@
 class AddressModel {
-   int? adressid;
+  final int? adressid;
   final String addresseeName;
   final String buildingNameOrNumber;
   final String streetNameOrNumber;
@@ -10,6 +10,7 @@ class AddressModel {
   final String poBox;
   final String country;
   final String phoneNumber;
+  String? pharmacyId; 
 
   AddressModel({
      this.adressid,
@@ -23,6 +24,7 @@ class AddressModel {
     required this.poBox,
     required this.country,
     required this.phoneNumber,
+    this.pharmacyId,
   });
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
@@ -38,6 +40,7 @@ class AddressModel {
       poBox: json['po_box'],
       country: json['country'],
       phoneNumber: json['phone_number'],
+      pharmacyId: json['pharmacistID'],
     );
   }
 
@@ -54,6 +57,7 @@ class AddressModel {
       'po_box': poBox,
       'country': country,
       'phone_number': phoneNumber,
+      'pharmacistID': pharmacyId, 
     };
   }
 }

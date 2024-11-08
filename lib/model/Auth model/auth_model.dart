@@ -1,26 +1,27 @@
 class AuthModel {
-  String? name;
-  int? pharmacyid;
+  String? pharmacyName;
+  int? pharmacyId;
   String? email;
   String? password;
 
   AuthModel({
-    this.name,
+    this.pharmacyName,
+    int? pharmacyId,
     this.email,
     this.password,
   });
 
   AuthModel.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    pharmacyid = json['pharmacy_id'];
+    pharmacyName = json['Pharmacy Name '];
+    pharmacyId = json['pharmacistID'];
     email = json['email'];
     password = json['password'];
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
-      'pharmacy_id':pharmacyid,
+      'Pharmacy Name ': pharmacyName,
+      'pharmacistID': pharmacyId,
       'email': email,
       'password': password,
     };

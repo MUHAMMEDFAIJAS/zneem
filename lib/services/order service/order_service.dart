@@ -2,11 +2,14 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../api/api.dart';
 import '../../model/order model/order_model.dart';
 
 class OrderService {
   final Dio _dio = Dio();
-  final String baseUrl = 'http://192.168.1.124:8081/master/order/getallorders';
+  final String baseUrl = Api.baseUrl;
+
+  // final String baseUrl = 'http://192.168.1.124:8081/master/order/getallorders';
 
   Future<List<OrderModel>> fetchAllOrders(String phoneNumber) async {
     try {
@@ -21,8 +24,8 @@ class OrderService {
       log('Using token: $token');
 
       final response = await _dio.get(
-        baseUrl,
-        data: {'phone_number': '9946233225'},
+        '$baseUrl/order/getallorders',
+        data: {'phone_number': phoneNumber},
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
         ),

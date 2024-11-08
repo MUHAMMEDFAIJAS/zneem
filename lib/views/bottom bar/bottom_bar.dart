@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:zneempharmacy/views/cart%20screen/user_address.dart';
 import 'package:zneempharmacy/views/medicine%20screen/medicine_screen.dart';
 import 'package:zneempharmacy/views/profile%20screen/profile_screen.dart';
+import '../cart screen/cart_screen.dart';
 import '../cart screen/cart_screen_1.dart';
 import '../home screen/home_screen.dart';
 import '../../model/address model/address_model.dart';
 
 class BottomBar extends StatefulWidget {
-  const BottomBar({super.key});
+  final AddressModel? selectedAddress;
+  const BottomBar({super.key, this.selectedAddress});
 
   @override
   State<BottomBar> createState() => _BottomBarState();
@@ -15,27 +19,21 @@ class BottomBar extends StatefulWidget {
 
 class _BottomBarState extends State<BottomBar> {
   int currentIndex = 0;
-  AddressModel? currentAddress; // Store current address here
+  AddressModel? selectedAddress;
 
   @override
   void initState() {
     super.initState();
-    // Initially load the HomeScreen and set the address if needed
-    currentAddress = null; // Initialize or fetch initial address if needed
+    selectedAddress =
+        widget.selectedAddress ?? null; // Initialize with passed address
   }
 
-  // Update the list of screens with the current address
   List<Widget> get screens => [
         HomeScreen(
-          selectedAddress: currentAddress,
-          onAddressSelected: (AddressModel? address) {
-            setState(() {
-              currentAddress = address;
-            });
-          },
+          selectedAddress: selectedAddress,
         ),
-        MedicineScreen(selectedAddress: currentAddress), // Pass current address
-        const CartScreen1(),
+        MedicineScreen(selectedAddress: selectedAddress),
+        CartScreen(selectedAddress: selectedAddress), // Directly navigate to CartScreen
         const ProfileScreen()
       ];
 
@@ -48,9 +46,20 @@ class _BottomBarState extends State<BottomBar> {
         elevation: 4,
         currentIndex: currentIndex,
         onTap: (newIndex) {
-          setState(() {
-            currentIndex = newIndex;
-          });
+          if (newIndex == 2 && selectedAddress == null) {
+            Get.to(() => UserAddress())?.then((result) {
+              if (result != null && result is AddressModel) {
+                setState(() {
+                  selectedAddress = result;
+                  currentIndex = 2;
+                });
+              }
+            });
+          } else {
+            setState(() {
+              currentIndex = newIndex;
+            });
+          }
         },
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.black,

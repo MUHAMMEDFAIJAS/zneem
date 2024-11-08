@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gap/gap.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zneempharmacy/model/address model/address_model.dart';
+import 'package:zneempharmacy/widgets/random_images.dart';
 import '../../controller/cart_controller.dart';
 import '../../controller/category_controller.dart';
 import '../product page/product_page.dart';
@@ -21,20 +21,7 @@ class MedicineScreen extends StatefulWidget {
 class _MedicineScreenState extends State<MedicineScreen> {
   final CategoryController _categoryController = Get.put(CategoryController());
   final CartController cartController = Get.put(CartController());
-  AddressModel? selectedAddress;
-
-  final List<String> fallbackImages = [
-    'assets/images/hair accesories.png',
-    'assets/images/Delivery-man-in-protective-medical-face-mask-with-a-box-in-his-hands-on-transparent-background-PNG 1.png',
-    'assets/images/pharmacy img.png',
-    'assets/images/herbal.png',
-    'assets/images/cosmetics.png',
-  ];
-
-  String getRandomFallbackImage() {
-    final randomIndex = Random().nextInt(fallbackImages.length);
-    return fallbackImages[randomIndex];
-  }
+  AddressModel? currentAddress;
 
   @override
   void initState() {
@@ -42,30 +29,31 @@ class _MedicineScreenState extends State<MedicineScreen> {
     fetchSelectedAddress();
   }
 
-
-
   void fetchSelectedAddress() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String? addressJson = prefs.getString('selectedAddress');
-  
-  if (addressJson != null) {
-    selectedAddress = AddressModel.fromJson(json.decode(addressJson));
-  } else {
-    selectedAddress = widget.selectedAddress; 
-  }
-  setState(() {}); 
-}
-
-
-  Future<AddressModel?> getSavedAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? savedAddresses = prefs.getStringList('currentAddresses');
+    String? addressJson = prefs.getString('selectedAddress');
 
-    if (savedAddresses != null && savedAddresses.isNotEmpty) {
-      return AddressModel.fromJson(json.decode(savedAddresses[0]));
+    if (addressJson != null) {
+      currentAddress = AddressModel.fromJson(json.decode(addressJson));
+      print(
+          'Fetched Address from SharedPreferences: ${currentAddress?.toJson()}');
+    } else {
+      currentAddress = widget.selectedAddress;
+      print(
+          'No address found in SharedPreferences. Using passed address: ${currentAddress?.toJson()}');
     }
-    return null;
+    setState(() {});
   }
+
+  // Future<AddressModel?> getSavedAddress() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   List<String>? savedAddresses = prefs.getStringList('currentAddresses');
+
+  //   if (savedAddresses != null && savedAddresses.isNotEmpty) {
+  //     return AddressModel.fromJson(json.decode(savedAddresses[0]));
+  //   }
+  //   return null;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -118,11 +106,13 @@ class _MedicineScreenState extends State<MedicineScreen> {
                     Expanded(
                       child: Obx(() {
                         if (_categoryController.isLoading.value) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
 
                         return GridView.builder(
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 4,
@@ -135,16 +125,18 @@ class _MedicineScreenState extends State<MedicineScreen> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    if (selectedAddress != null) {
+                                    if (currentAddress != null) {
                                       Get.to(() => ProductPage(
                                             categoryId: data.id,
-                                            selectedAddress: selectedAddress!,
+                                            selectedAddress: currentAddress!,
                                             productId: data.id,
                                           ));
                                     } else {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         const SnackBar(
-                                          content: Text('Please select an address first!'),
+                                          content: Text(
+                                              'Please select an address first!'),
                                         ),
                                       );
                                     }
@@ -167,9 +159,11 @@ class _MedicineScreenState extends State<MedicineScreen> {
                                         fit: BoxFit.cover,
                                         width: double.infinity,
                                         height: 120,
-                                        errorBuilder: (context, error, stackTrace) {
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
                                           return Image.asset(
-                                            getRandomFallbackImage(),
+                                            RandomImages()
+                                                .getRandomFallbackImage(),
                                             fit: BoxFit.cover,
                                             width: double.infinity,
                                             height: 120,

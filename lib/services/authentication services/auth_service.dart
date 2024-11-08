@@ -1,14 +1,13 @@
-
-
-import 'package:dio/dio.dart' as dio; 
+import 'package:dio/dio.dart' as dio;
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zneempharmacy/api/api.dart';
 import '../../model/Auth model/auth_model.dart';
 import '../../views/login/login_screen.dart';
 
 class AuthService extends GetxController {
   final dio.Dio _dio = dio.Dio();
-  final String baseUrl = "http://192.168.1.124:8081/master";
+  final String baseUrl = Api.baseUrl;
 
   Future<void> register(AuthModel authModel) async {
     try {
@@ -41,17 +40,25 @@ class AuthService extends GetxController {
           response.data['responseStatus'] == "Success") {
         print("Login successful!");
 
+        // Retrieve required fields from response data
         String token = response.data['responseData']['TOKEN'];
-        print('Token: $token');
+        int pharmacyId = response.data['responseData']['pharmacistID'];
+        String pharmacyName = response.data['responseData']['Pharmacy Name '];
+        String userEmail = response.data['responseData']['email'];
 
+        // Save token and user details to SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('authToken', token);
+        await prefs.setInt('pharmacyId', pharmacyId);
+        await prefs.setString('pharmacyName', pharmacyName);
+        await prefs.setString('userEmail', userEmail);
         await prefs.setBool('isLoggedIn', true);
 
-        //  Get.offAll(() => BottomBar());
+        print('Token: $token');
+        print('Pharmacy ID: $pharmacyId');
+        print('Pharmacy Name: $pharmacyName');
       } else {
-        print(
-            "Failed to login: ${response.data['responseDescription'] ?? response.statusMessage}");
+        print("Failed to login: ${response.data['responseDescription'] ?? response.statusMessage}");
       }
     } catch (e) {
       print("Error during login: $e");
@@ -59,10 +66,15 @@ class AuthService extends GetxController {
   }
 
   Future<void> logout() async {
+    // Clear token and user details from SharedPreferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('authToken');
+    await prefs.remove('pharmacyId');
+    await prefs.remove('pharmacyName');
+    await prefs.remove('userEmail');
     await prefs.setBool('isLoggedIn', false);
 
+    // Navigate to LoginScreen
     Get.offAll(() => LoginScreen());
     print("User logged out.");
   }

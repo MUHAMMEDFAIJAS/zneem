@@ -34,23 +34,21 @@ class CheckoutScreenState extends State<CheckoutScreen> {
   final CheckoutService service = CheckoutService();
 
   PharmacyModel? _selectedPharmacy;
-  List<PharmacyModel> _pharmacies = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchPharmacies();
+    _fetchPharmacy();
   }
 
-  Future<void> _fetchPharmacies() async {
+  Future<void> _fetchPharmacy() async {
     try {
       List<PharmacyModel> pharmacies = await service.fetchPharmacies();
       setState(() {
-        _pharmacies = pharmacies;
-        _selectedPharmacy = _pharmacies.isNotEmpty ? _pharmacies[0] : null;
+        _selectedPharmacy = pharmacies.isNotEmpty ? pharmacies[0] : null;
       });
     } catch (e) {
-      log("Error fetching pharmacies: $e");
+      log("Error fetching pharmacy: $e");
     }
   }
 
@@ -89,7 +87,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
     log("Token: $token");
     log("Cart ID: ${widget.cartdetails.cartId}");
     log("Phone Number: ${widget.selectedAddress.phoneNumber}");
-    log("Address ID: ${widget.selectedAddress.addresseeName}");
+    log("Address id: ${widget.selectedAddress.addresseeName}");
     log("Pharmacy ID: ${_selectedPharmacy?.id}");
     log("Payment Method: $_selectedPaymentMethod");
 
@@ -103,7 +101,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
           "cart_id": widget.cartdetails.cartId,
           "phone_number": widget.selectedAddress.phoneNumber,
           "address_id": widget.selectedAddress.adressid,
-          "pharmacy_id": _selectedPharmacy?.id,
+          "pharmacy_id": _selectedPharmacy?.addressId,
           "payment_method": _selectedPaymentMethod,
         },
       );
@@ -260,29 +258,6 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Select Pharmacy',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              DropdownButton<PharmacyModel>(
-                value: _selectedPharmacy,
-                hint: const Text("Select Pharmacy"),
-                isExpanded: true,
-                items: _pharmacies.map((PharmacyModel pharmacy) {
-                  return DropdownMenuItem<PharmacyModel>(
-                    value: pharmacy,
-                    child: Text(pharmacy.pharmacyName ??
-                        "Unknown Pharmacy"), 
-                  );
-                }).toList(),
-                onChanged: (PharmacyModel? newValue) {
-                  setState(() {
-                    _selectedPharmacy = newValue;
-                  });
-                },
               ),
               const SizedBox(height: 20),
               const Text(

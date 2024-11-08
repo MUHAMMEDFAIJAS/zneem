@@ -1,26 +1,38 @@
-
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zneempharmacy/api/api.dart';
 
 import '../../model/pharmcay model/pharmacy_model.dart';
 
 class CheckoutService {
   final Dio _dio = Dio();
-  final String checkoutUrl = "http://192.168.1.124:8081/master/order/checkout";
+  final String baseUrl = Api.baseUrl;
+
+  Future<String?> _getToken() async {
+    return await Api.getAuthToken();
+  }
+
+  Future<int?> _getPharmacyId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('pharmacyId');
+  }
 
   Future<void> checkout({
     required int cartId,
     required String phoneNumber,
     required int addressId,
-    required int pharmacyId,
     required String paymentMethod,
   }) async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('authToken');
-
+      String? token = await _getToken();
       if (token == null) {
         print("No token found. Please login first.");
+        return;
+      }
+
+      int? pharmacyId = await _getPharmacyId();
+      if (pharmacyId == null) {
+        print("No pharmacy ID found. Please login again.");
         return;
       }
 
@@ -35,7 +47,7 @@ class CheckoutService {
       };
 
       Response response = await _dio.post(
-        checkoutUrl,
+        '$baseUrl/order/checkout',
         data: requestBody,
       );
 
@@ -51,38 +63,30 @@ class CheckoutService {
     }
   }
 
-Future<List<PharmacyModel>> fetchPharmacies() async {
-  try {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('authToken');
+  Future<List<PharmacyModel>> fetchPharmacies() async {
+    try {
+      String? token = await _getToken();
+      if (token == null) {
+        print("Token not found. Please log in first.");
+        return [];
+      }
 
-    if (token == null) {
-      print("Token not found. Please log in first.");
-      return []; 
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+      Response response = await _dio.get('$baseUrl/pharmacy/getpharmacy');
+
+      if (response.statusCode == 200 &&
+          response.data['responseStatus'] == "Success") {
+        List<dynamic> pharmacyList = response.data['responseData'];
+        return pharmacyList
+            .map((pharmacyJson) => PharmacyModel.fromJson(pharmacyJson))
+            .toList();
+      } else {
+        print("Failed to retrieve pharmacies: ${response.data['responseDescription']}");
+        return [];
+      }
+    } catch (e) {
+      print("Error fetching pharmacies: $e");
+      return [];
     }
-
-    Dio dio = Dio();
-    dio.options.headers['Authorization'] = 'Bearer $token';
-
-    Response response = await dio.get('http://192.168.1.124:8081/master/pharmacy/getpharmacy');
-
-    if (response.statusCode == 200 && response.data['responseStatus'] == "Success") {
-      List<dynamic> pharmacyList = response.data['responseData'];
-
-      List<PharmacyModel> pharmacies = pharmacyList
-          .map((pharmacyJson) => PharmacyModel.fromJson(pharmacyJson))
-          .toList();
-
-      print("Pharmacies retrieved successfully: ${pharmacies.length} items");
-      return pharmacies; 
-    } else {
-      print("Failed to retrieve pharmacies: ${response.data['responseDescription']}");
-      return []; 
-    }
-  } catch (e) {
-    print("Error fetching pharmacies: $e");
-    return []; 
   }
-}
-
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:zneempharmacy/widgets/random_images.dart';
 
 class CategoryCard {
-  
   Widget categoryCard(String imagePath, String title, Function ontap) {
     return InkWell(
       onTap: () {
@@ -17,13 +17,16 @@ class CategoryCard {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Image.asset(
-                imagePath,
-                height: 120,
-                width: double.infinity,
-                fit: BoxFit.cover,
+            GestureDetector(
+              onTap: () {},
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Image.asset(
+                  RandomImages().getRandomFallbackImage(),
+                  height: 120,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             const SizedBox(height: 5),
@@ -31,6 +34,7 @@ class CategoryCard {
               title,
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

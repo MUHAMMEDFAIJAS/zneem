@@ -93,7 +93,7 @@ class _UserAddressState extends State<UserAddress> {
                                       ),
                                     ));
                                   },
-                                  icon: Icon(Icons.store)),
+                                  icon: const Icon(Icons.arrow_forward)),
                             ),
                           ),
                         ),
@@ -110,7 +110,7 @@ class _UserAddressState extends State<UserAddress> {
             builder: (context) => const AddUserAddressPage(),
           ));
         },
-        backgroundColor: AppColor.floatingcolor,
+        backgroundColor: AppColor.primary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
@@ -120,13 +120,38 @@ class _UserAddressState extends State<UserAddress> {
   }
 
   void _selectAddress(AddressModel address) async {
-    setState(() {
-      selectedAddress = address;
-    });
+    bool confirmSelection = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Address Selection'),
+          content: Text(
+              'Are you sure you want to select this address?\n\n${address.addresseeName}\n${address.phoneNumber}\n${address.country}'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmSelection == true) {
+      setState(() {
+        selectedAddress = address;
+      });
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('selectedAddress', json.encode(address.toJson()));
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('selectedAddress', json.encode(address.toJson()));
 
-    Get.back(result: selectedAddress);
+      Get.back(result: selectedAddress);
+      // Navigator.of(context).pushReplacement(MaterialPageRoute(
+      //   builder: (context) => HomeScreen(selectedAddress: address),
+      // ));
+    }
   }
 }

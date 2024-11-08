@@ -1,16 +1,20 @@
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../api/api.dart';
 import '../../model/address model/address_model.dart';
 import '../../model/cart model/cart_model.dart';
 
 class CartServices {
   final Dio _dio = Dio();
+
+  final String baseUrl = Api.baseUrl;
+
   Future<String> addToCart({
     required int productId,
     required String phoneNumber,
     required AddressModel address,
   }) async {
-    const String url = 'http://192.168.1.124:8081/master/cart/add';
+    // const String url = 'http://192.168.1.124:8081/master/cart/add';
 
     final prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('authToken');
@@ -27,7 +31,7 @@ class CartServices {
 
     try {
       final response = await _dio.post(
-        url,
+        '$baseUrl/cart/add',
         data: data,
         options: Options(
           headers: {
@@ -47,7 +51,7 @@ class CartServices {
     }
   }
 
-  final String baseUrl = "http://192.168.1.124:8081/master/cart/fetchCart";
+  // final String baseUrl = "http://192.168.1.124:8081/master/cart/fetchCart";
 
   Future<CartModel> fetchCart(String phoneNumber) async {
     try {
@@ -56,7 +60,7 @@ class CartServices {
 
       if (token != null) {
         Response response = await _dio.get(
-          baseUrl,
+          "$baseUrl/cart/fetchCart",
           data: {
             "phone_number": phoneNumber,
           },
@@ -83,7 +87,7 @@ class CartServices {
 
   Future<String> deletecartitem(
       {required int itemId, required String phoneNumber}) async {
-    const String url = 'http://192.168.1.124:8081/master/cart/removeCartItem';
+    // const String url = 'http://192.168.1.124:8081/master/cart/removeCartItem';
 
     final prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('authToken');
@@ -97,7 +101,7 @@ class CartServices {
       "phone_number": phoneNumber,
     };
     try {
-      final response = await _dio.delete(url,
+      final response = await _dio.delete('$baseUrl/cart/removeCartItem',
           data: data,
           options: Options(headers: {
             'Authorization': 'Bearer $token',
@@ -117,9 +121,9 @@ class CartServices {
   Future<String> updateQuantity({
     required int cartItemId,
     required String phoneNumber,
-     required int quantity,
+    required int quantity,
   }) async {
-    const String url = 'http://192.168.1.124:8081/master/order/updatequantity';
+    // const String url = 'http://192.168.1.124:8081/master/order/updatequantity';
 
     final prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('authToken');
@@ -131,12 +135,12 @@ class CartServices {
     final Map<String, dynamic> data = {
       "cart_item_id": cartItemId,
       "phone_number": phoneNumber,
-       "Quantity": quantity,
+      "Quantity": quantity,
     };
 
     try {
       final response = await _dio.put(
-        url,
+        '$baseUrl/order/updatequantity',
         data: data,
         options: Options(
           headers: {
@@ -160,7 +164,7 @@ class CartServices {
     required int cartItemId,
     required String phoneNumber,
   }) async {
-    const String url = 'http://192.168.1.124:8081/master/order/reducequantity';
+    // const String url = 'http://192.168.1.124:8081/master/order/reducequantity';
 
     final prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('authToken');
@@ -177,7 +181,7 @@ class CartServices {
 
     try {
       final response = await _dio.put(
-        url,
+        '$baseUrl/order/reducequantity',
         data: data,
         options: Options(
           headers: {
